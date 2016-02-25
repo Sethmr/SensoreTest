@@ -16,16 +16,21 @@ import android.widget.Toast;
 
 import com.example.seth.sensortest.R;
 
+import java.math.MathContext;
+
 public class SensorTestActivity extends Activity implements SensorEventListener {
     private SensorManager sensorManager;
     private boolean color = false;
     private View view;
     private long lastUpdate;
     TextView textx, textz;
+    private int mAzimuth = 0;
 
     Button btnShowLocation;
     GPSTracker gps;
 
+    float[] orientation = new float[3];
+    float[] rMat = new float[9];
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,13 @@ public class SensorTestActivity extends Activity implements SensorEventListener 
             checkShake(event);
         }
 
+        if( event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR ){
+            // calculate th rotation matrix
+            SensorManager.getRotationMatrixFromVector( rMat, event.values );
+            // get the azimuth value (orientation[0]) in degree
+            mAzimuth = (int) ( Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
+        }
+
     }
 
     private void displayAccelerometer(SensorEvent event) {
@@ -91,10 +103,12 @@ public class SensorTestActivity extends Activity implements SensorEventListener 
         // Many sensors return 3 values, one for each axis.
 
         float x = event.values[0];
+        float y = event.values[1];
         float z = event.values[2];
 
+
         // display values using TextView
-        textx.setText(x + "°");
+        textx.setText(mAzimuth + "°");
         textz.setText(Math.round(z*-9) + "°");
 
     }
@@ -148,116 +162,3 @@ public class SensorTestActivity extends Activity implements SensorEventListener 
         sensorManager.unregisterListener(this);
     }
 }
-//public class Compass  implements SensorEventListener
-//{
-//    public static final float TWENTY_FIVE_DEGREE_IN_RADIAN = 0.436332313f;
-//    public static final float ONE_FIFTY_FIVE_DEGREE_IN_RADIAN = 2.7052603f;
-//
-//    private SensorManager mSensorManager;
-//    private float[] mGravity;
-//    private float[] mMagnetic;
-//    // If the device is flat mOrientation[0] = azimuth, mOrientation[1] = pitch
-//    // and mOrientation[2] = roll, otherwise mOrientation[0] is equal to Float.NAN
-//    private float[] mOrientation = new float[3];
-//    private LinkedList<Float> mCompassHist = new LinkedList<Float>();
-//    private float[] mCompassHistSum = new float[]{0.0f, 0.0f};
-//    private int mHistoryMaxLength;
-//
-//    public Compass(Context context)
-//    {
-//        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-//        // Adjust the history length to fit your need, the faster the sensor rate
-//        // the larger value is needed for stable result.
-//        mHistoryMaxLength = 20;
-//    }
-//
-//    public void registerListener(int sensorRate)
-//    {
-//        Sensor magneticSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-//        if (magneticSensor != null)
-//        {
-//            mSensorManager.registerListener(this, magneticSensor, sensorRate);
-//        }
-//        Sensor gravitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-//        if (gravitySensor != null)
-//        {
-//            mSensorManager.registerListener(this, gravitySensor, sensorRate);
-//        }
-//    }
-//
-//    public void unregisterListener()
-//    {
-//        mSensorManager.unregisterListener(this);
-//    }
-//
-//    @Override
-//    public void onAccuracyChanged(Sensor sensor, int accuracy)
-//    {
-//
-//    }
-//
-//    @Override
-//    public void onSensorChanged(SensorEvent event)
-//    {
-//        if (event.sensor.getType() == Sensor.TYPE_GRAVITY)
-//        {
-//            mGravity = event.values.clone();
-//        }
-//        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-//        {
-//            mMagnetic = event.values.clone();
-//        }
-//        if (!(mGravity == null || mMagnetic == null))
-//        {
-//            mOrientation = getOrientation();
-//        }
-//    }
-//
-//    private void getOrientation()
-//    {
-//        float[] rotMatrix = new float[9];
-//        if (SensorManager.getRotationMatrix(rotMatrix, null,
-//                mGravity, mMagnetic))
-//        {
-//            float inclination = (float) Math.acos(rotMatrix[8]);
-//            // device is flat
-//            if (inclination < TWENTY_FIVE_DEGREE_IN_RADIAN
-//                    || inclination > ONE_FIFTY_FIVE_DEGREE_IN_RADIAN)
-//            {
-//                float[] orientation = sensorManager.getOrientation(rotMatrix, mOrientation);
-//                mCompassHist.add(orientation[0]);
-//                mOrientation[0] = averageAngle();
-//            }
-//            else
-//            {
-//                mOrientation[0] = Float.NAN;
-//                clearCompassHist();
-//            }
-//        }
-//    }
-//
-//    private void clearCompassHist()
-//    {
-//        mCompassHistSum[0] = 0;
-//        mCompassHistSum[1] = 0;
-//        mCompassHist.clear();
-//    }
-//
-//    public float averageAngle()
-//    {
-//        int totalTerms = mCompassHist.size();
-//        if (totalTerms > mHistoryMaxLength)
-//        {
-//            float firstTerm = mCompassHist.removeFirst();
-//            mCompassHistSum[0] -= Math.sin(firstTerm);
-//            mCompassHistSum[1] -= Math.cos(firstTerm);
-//            totalTerms -= 1;
-//        }
-//        float lastTerm = mCompassHist.getLast();
-//        mCompassHistSum[0] += Math.sin(lastTerm);
-//        mCompassHistSum[1] += Math.cos(lastTerm);
-//        float angle = (float) Math.atan2(mCompassHistSum[0] / totalTerms, mCompassHistSum[1] / totalTerms);
-//
-//        return angle;
-//    }
-//}
