@@ -3,6 +3,7 @@ package com.example.seth.sensortest;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
@@ -96,27 +97,27 @@ public class SensorTestActivity extends Activity implements SensorEventListener 
 
         btnShowLocation = (Button) findViewById(R.id.button1);
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                gps = new GPSTracker(SensorTestActivity.this);
-
-                if (gps.canGetLocation()) {
-                    latitude = gps.getLatitude();
-                    longitude = gps.getLongitude();
-                    forecastURL = "https://api.forecast.io/forecast/" + apiKey + "/" + latitude + "," + longitude;
-
-                    String coords = (String) "Lat: " + latitude + "\nLong: "
-                            + longitude;
-                    setLabel(coords);
-
-                    getForecast();
-                } else {
-                    gps.showSettingsAlert();
-                }
+                showAll();
             }
         });
 
+        gps = new GPSTracker(SensorTestActivity.this);
+
+        if (gps.canGetLocation()) {
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+            forecastURL = "https://api.forecast.io/forecast/" + apiKey + "/" + latitude + "," + longitude;
+
+            String coords = (String) "Lat: " + latitude + "\nLong: "
+                    + longitude;
+            setLabel(coords);
+
+            getForecast();
+        } else {
+            gps.showSettingsAlert();
+        }
         // get textviews
         textx = (TextView) findViewById(R.id.azi);
         textz = (TextView) findViewById(R.id.zval);
@@ -124,7 +125,6 @@ public class SensorTestActivity extends Activity implements SensorEventListener 
 
 
         view = findViewById(R.id.textView);
-        view.setBackgroundColor(Color.BLUE);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(this,
@@ -283,15 +283,44 @@ public class SensorTestActivity extends Activity implements SensorEventListener 
                 return;
             }
             lastUpdate = actualTime;
-            Toast.makeText(this, "Don't shake me!", Toast.LENGTH_SHORT).show();
-            if (color) {
-                view.setBackgroundColor(Color.BLUE);
 
-            } else {
-                view.setBackgroundColor(Color.RED);
-            }
-            color = !color;
+            hideAll();
+
+            Toast.makeText(this, "Abra Kadabra!", Toast.LENGTH_SHORT).show();
+
         }
+    }
+
+    private void showAll() {
+        TextView[] textViewDays = {textDay1,textDay2,textDay3,textDay4,textDay5,textDay6,textDay7};
+        TextView[] textViewHiLows = {textHiLow1,textHiLow2,textHiLow3,textHiLow4,textHiLow5,textHiLow6,textHiLow7};
+        ImageView[] imageViewWeathers = {imageWeather1,imageWeather2,imageWeather3,imageWeather4,imageWeather5,imageWeather6,imageWeather7};
+        for (int i = 0; i < 7; i++) {
+            textViewDays[i].setVisibility(View.VISIBLE);
+            textViewHiLows[i].setVisibility(View.VISIBLE);
+            imageViewWeathers[i].setVisibility(View.VISIBLE);
+        }
+        textTemp.setVisibility(View.VISIBLE);
+        textx.setVisibility(View.VISIBLE);
+        textz.setVisibility(View.VISIBLE);
+        TextView info1 = (TextView) findViewById(R.id.coord);
+        info1.setVisibility(View.VISIBLE);
+    }
+
+    private void hideAll() {
+        TextView[] textViewDays = {textDay1,textDay2,textDay3,textDay4,textDay5,textDay6,textDay7};
+        TextView[] textViewHiLows = {textHiLow1,textHiLow2,textHiLow3,textHiLow4,textHiLow5,textHiLow6,textHiLow7};
+        ImageView[] imageViewWeathers = {imageWeather1,imageWeather2,imageWeather3,imageWeather4,imageWeather5,imageWeather6,imageWeather7};
+        for (int i = 0; i < 7; i++) {
+            textViewDays[i].setVisibility(View.INVISIBLE);
+            textViewHiLows[i].setVisibility(View.INVISIBLE);
+            imageViewWeathers[i].setVisibility(View.INVISIBLE);
+        }
+        textTemp.setVisibility(View.INVISIBLE);
+        textx.setVisibility(View.INVISIBLE);
+        textz.setVisibility(View.INVISIBLE);
+        TextView info1 = (TextView) findViewById(R.id.coord);
+        info1.setVisibility(View.INVISIBLE);
     }
 
     @Override

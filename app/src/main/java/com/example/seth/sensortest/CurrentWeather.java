@@ -11,8 +11,8 @@ public class CurrentWeather {
     private String[] mIcon = new String[7];
     private long[] mTime = new long[7];
     private int mTemperature;
-    private double[] mLowTemp = new double[7];
-    private double[] mHighTemp = new double[7];
+    private int[] mLowTemp = new int[7];
+    private int[] mHighTemp = new int[7];
     private String mTimeZone;
 
     public void setTime(long mTime, int index) {
@@ -27,20 +27,20 @@ public class CurrentWeather {
         this.mTemperature = (int) Math.round(mTemperature);
     }
 
-    public double[] getLowTemp() {
+    public int[] getLowTemp() {
         return mLowTemp;
     }
 
     public void setLowTemp(double mLowTemp, int index) {
-        this.mLowTemp[index] = mLowTemp;
+        this.mLowTemp[index] = (int) Math.round(mLowTemp);
     }
 
-    public double[] getHighTemp() {
+    public int[] getHighTemp() {
         return mHighTemp;
     }
 
     public void setHighTemp(double mHighTemp, int index) {
-        this.mHighTemp[index] = mHighTemp;
+        this.mHighTemp[index] = (int) Math.round(mHighTemp);
     }
 
     public long[] getTime() {

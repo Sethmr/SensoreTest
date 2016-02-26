@@ -41,7 +41,8 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 android:textSize="17dp"
-                android:id="@+id/coord" />
+                android:id="@+id/coord"
+                android:visibility="visible" />
 
             <Button
                 android:layout_width="48dp"
